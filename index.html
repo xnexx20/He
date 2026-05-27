@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Access | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4 font-sans"
+  >
+    <!-- LOGIN PANEL -->
+    <div
+      id="loginCard"
+      class="w-full max-w-md bg-slate-800/50 backdrop-blur-md p-8 rounded-2xl border border-slate-700/50 shadow-2xl"
+    >
+      <h2
+        class="text-3xl font-bold text-center tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent mb-8"
+      >
+        Account Login
+      </h2>
+
+      <form id="loginForm" class="space-y-5">
+        <div>
+          <label
+            class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2"
+            >Username</label
+          >
+          <input
+            type="text"
+            id="username"
+            required
+            autocomplete="off"
+            class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+          />
+        </div>
+
+        <div>
+          <label
+            class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2"
+            >Password</label
+          >
+          <input
+            type="password"
+            id="password"
+            required
+            class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+          />
+        </div>
+
+        <div
+          id="loginError"
+          class="text-red-400 text-sm hidden bg-red-950/30 border border-red-800/50 p-3 rounded-lg"
+        ></div>
+
+        <button
+          type="submit"
+          class="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 font-medium text-white rounded-xl shadow-lg shadow-blue-500/20 transition-all duration-200 transform active:scale-95"
+        >
+          Sign In
+        </button>
+      </form>
+    </div>
+
+    <!-- ADMIN DASHBOARD (Hidden by Default) -->
+    <div
+      id="adminDashboard"
+      class="w-full max-w-4xl bg-slate-800/50 backdrop-blur-md p-8 rounded-2xl border border-slate-700/50 shadow-2xl hidden"
+    >
+      <div
+        class="flex flex-wrap justify-between items-center mb-8 border-b border-slate-700/50 pb-4 gap-3"
+      >
+        <div>
+          <h2 class="text-2xl font-bold text-white">Control Panel</h2>
+          <p class="text-slate-400 text-sm">Logged in as Administrator</p>
+        </div>
+        <button
+          id="logoutBtn"
+          class="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 rounded-lg transition"
+        >
+          Logout
+        </button>
+      </div>
+
+      <!-- Create User Form -->
+      <div class="bg-slate-900/40 p-6 rounded-xl border border-slate-700/30 mb-8">
+        <h3 class="text-lg font-medium text-blue-400 mb-4">
+          ➕ Provision New Account
+        </h3>
+
+        <form id="createUserForm" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1"
+                >New Username</label
+              >
+              <input
+                type="text"
+                id="newUsername"
+                required
+                class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1"
+                >Password Assignment</label
+              >
+              <input
+                type="password"
+                id="newPassword"
+                required
+                class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-blue-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs text-slate-400 mb-1"
+              >Access Privileges</label
+            >
+            <select
+              id="newRole"
+              class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-blue-500"
+            >
+              <option value="user">Standard User</option>
+              <option value="admin">System Administrator</option>
+            </select>
+          </div>
+
+          <div id="actionMessage" class="text-sm hidden p-3 rounded-lg"></div>
+
+          <button
+            type="submit"
+            class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition"
+          >
+            Create Account
+          </button>
+        </form>
+      </div>
+
+      <!-- User List Table (with delete) -->
+      <div class="bg-slate-900/40 p-6 rounded-xl border border-slate-700/30">
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+          <h3 class="text-lg font-medium text-blue-400">
+            📋 Registered Users
+          </h3>
+          <span
+            id="userCountBadge"
+            class="text-xs bg-slate-700 px-3 py-1 rounded-full"
+            >0 users</span
+          >
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="border-b border-slate-700">
+              <tr class="text-left text-slate-400">
+                <th class="pb-2">ID</th>
+                <th class="pb-2">Username</th>
+                <th class="pb-2">Role</th>
+                <th class="pb-2 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody">
+              <tr>
+                <td colspan="4" class="text-center py-6 text-slate-500">
+                  <i class="fas fa-spinner fa-pulse"></i> Loading users...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Font Awesome Icons (for delete icon) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <script>
+      const loginForm = document.getElementById("loginForm");
+      const createUserForm = document.getElementById("createUserForm");
+      const loginCard = document.getElementById("loginCard");
+      const adminDashboard = document.getElementById("adminDashboard");
+      const loginError = document.getElementById("loginError");
+      const actionMessage = document.getElementById("actionMessage");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const userTableBody = document.getElementById("userTableBody");
+      const userCountBadge = document.getElementById("userCountBadge");
+
+      let sessionToken = "";
+      let currentUsername = "";
+
+      // Helper: show action messages (create/delete)
+      function showActionMessage(text, isError = false) {
+        actionMessage.innerText = text;
+        actionMessage.classList.remove("hidden");
+        if (isError) {
+          actionMessage.className =
+            "text-sm p-3 rounded-lg bg-red-950/40 text-red-400 border border-red-800/50";
+        } else {
+          actionMessage.className =
+            "text-sm p-3 rounded-lg bg-emerald-950/40 text-emerald-400 border border-emerald-800/50";
+        }
+        setTimeout(() => {
+          actionMessage.classList.add("hidden");
+        }, 3000);
+      }
+
+      // Fetch and render user list
+      async function loadUserList() {
+        if (!sessionToken) return;
+        try {
+          const response = await fetch("/.netlify/functions/auth", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "listUsers",
+              token: sessionToken,
+            }),
+          });
+          const data = await response.json();
+          if (!response.ok) {
+            showActionMessage(data.error || "Failed to load users", true);
+            userTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-red-400">Error loading users</td></tr>`;
+            return;
+          }
+          const users = data.users || [];
+          userCountBadge.innerText = `${users.length} user${users.length !== 1 ? "s" : ""}`;
+
+          if (users.length === 0) {
+            userTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-slate-500">No users found. Create one above.</td></tr>`;
+            return;
+          }
+
+          let html = "";
+          for (const user of users) {
+            const isCurrentUser = user.username === currentUsername;
+            html += `
+              <tr class="border-b border-slate-800/50">
+                <td class="py-3 font-mono text-xs">${user._id.slice(-8)}</td>
+                <td class="py-3 font-medium">${escapeHtml(user.username)} ${
+              isCurrentUser ? '<span class="text-xs text-blue-400">(you)</span>' : ""
+            }</td>
+                <td class="py-3">
+                  <span class="px-2 py-1 rounded-full text-xs ${
+                    user.role === "admin"
+                      ? "bg-purple-900/50 text-purple-300"
+                      : "bg-slate-700 text-slate-300"
+                  }">${user.role}</span>
+                </td>
+                <td class="py-3 text-center">
+                  ${
+                    !isCurrentUser
+                      ? `<button onclick="deleteUser('${user._id}', '${escapeHtml(user.username)}')" class="text-red-400 hover:text-red-300 transition" title="Remove user">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>`
+                      : `<span class="text-slate-600 text-xs">—</span>`
+                  }
+                </td>
+              </tr>
+            `;
+          }
+          userTableBody.innerHTML = html;
+        } catch (err) {
+          console.error(err);
+          showActionMessage("Network error while fetching users", true);
+        }
+      }
+
+      // Escape HTML to prevent injection
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      // Delete user function (global for onclick)
+      window.deleteUser = async function (userId, username) {
+        if (!confirm(`Delete user "${username}" permanently?`)) return;
+        try {
+          const response = await fetch("/.netlify/functions/auth", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "deleteUser",
+              token: sessionToken,
+              userId: userId,
+            }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            showActionMessage(`✅ User "${username}" removed.`);
+            loadUserList(); // refresh table
+          } else {
+            showActionMessage(data.error || "Delete failed", true);
+          }
+        } catch (err) {
+          showActionMessage("Network error during delete", true);
+        }
+      };
+
+      // LOGIN
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        loginError.classList.add("hidden");
+
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        try {
+          const response = await fetch("/.netlify/functions/auth", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "login",
+              username,
+              password,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            sessionToken = data.token;
+            currentUsername = username;
+            loginCard.classList.add("hidden");
+            adminDashboard.classList.remove("hidden");
+            loginForm.reset();
+            // load user list after login
+            await loadUserList();
+          } else {
+            loginError.innerText = data.error || "Authentication failed.";
+            loginError.classList.remove("hidden");
+          }
+        } catch (err) {
+          loginError.innerText = "Network error linking to serverless backend.";
+          loginError.classList.remove("hidden");
+        }
+      });
+
+      // CREATE USER
+      createUserForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const payload = {
+          action: "createUser",
+          token: sessionToken,
+          newUsername: document.getElementById("newUsername").value,
+          newPassword: document.getElementById("newPassword").value,
+          newRole: document.getElementById("newRole").value,
+        };
+
+        try {
+          const response = await fetch("/.netlify/functions/auth", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            showActionMessage(`✅ Account "${data.user}" created.`);
+            createUserForm.reset();
+            loadUserList(); // refresh table
+          } else {
+            showActionMessage(data.error || "Failed to create user.", true);
+          }
+        } catch (err) {
+          showActionMessage("Error communicating with creation endpoint.", true);
+        }
+      });
+
+      // LOGOUT
+      logoutBtn.addEventListener("click", () => {
+        sessionToken = "";
+        currentUsername = "";
+        adminDashboard.classList.add("hidden");
+        loginCard.classList.remove("hidden");
+        userTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-slate-500">Loading users...</td></tr>`;
+      });
+    </script>
+  </body>
+</html>
