@@ -1,7 +1,7 @@
 const { MongoClient, ObjectId } = require("mongodb");
 
 // Environment variables set in Netlify
-const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI;
+const MONGO_URI = (process.env.MONGODB_URI || process.env.MONGO_URI || "").trim();
 const DB_NAME = process.env.DB_NAME || "auth_db";
 const COLLECTION_NAME = "users";
 
@@ -17,7 +17,7 @@ async function getDb() {
   }
 
   if (cachedClient) return cachedClient.db(DB_NAME);
-  const client = new MongoClient(MONGO_URI);
+  const client = new MongoClient(MONGO_URI, { authSource: "admin" });
   await client.connect();
   cachedClient = client;
   return client.db(DB_NAME);
